@@ -22,8 +22,6 @@ func main() {
 
 	port = ":" + port
 
-
-
 	log.Fatal(http.ListenAndServe(port, router))
 }
 
