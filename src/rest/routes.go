@@ -11,29 +11,23 @@ type Route struct {
 
 type Routes []Route
 
-var routes = Routes{
-	Route{
+var routes = Routes {
+	Route {
 		"Index",
 		"GET",
 		"/",
-		Index,
+		ServiceInfo,
 	},
-	Route{
-		"TodoIndex",
+	Route {
+		"InstanceData",
 		"GET",
-		"/todos",
-		TodoIndex,
+		"/InstanceData",
+		InstanceData,
 	},
-	Route{
-		"TodoCreate",
-		"POST",
-		"/todos",
-		TodoCreate,
-	},
-	Route{
-		"TodoShow",
+	Route {
+		"ServiceInfo",
 		"GET",
-		"/todos/{todoId}",
-		TodoShow,
+		"/ServiceInfo",
+		ServiceInfo,
 	},
 }

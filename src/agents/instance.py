@@ -1,5 +1,6 @@
 import gtmagent
 import os
+import lockspace
 
 def agent():
     
@@ -157,6 +158,8 @@ def agent():
         import replication_source
         source_server_data = replication_source.agent()
 
+    lock_data = lockspace.agent()
+
     data = {'instanceUser': instance_user,
             'instanceHome': instance_home,
             'routinePath': gtm_routines,
@@ -171,6 +174,7 @@ def agent():
             'zinterruptAction': os.environ['gtm_zinterrupt'],
             'gtmBoolean': os.environ['gtm_boolean'],
             'gtmETrap': os.environ['gtm_etrap'],
+            'lockData': lock_data,
             'replication': { 'role': repl_side,
                              'controlFile': os.environ['gtm_repl_instance'],
                              'instanceName': os.environ['gtm_repl_instname'],
