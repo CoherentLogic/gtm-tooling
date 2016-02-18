@@ -31,6 +31,7 @@ func ServiceInfo(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprint(w, "<h1>GT.M Instrumentation Service Endpoints</h1><table>")
 	fmt.Fprint(w, "<tr><th>Endpoint</th><th>Method</th><th>Description</th></tr>")
+
 	for _, route := range routes {
 		link := "<tr><td><a href=\"" + route.Pattern + "\">" + route.Pattern + "</a></td><td>" + route.Method + "</td><td>" + route.HelpText + "</td></tr>"
 		fmt.Fprint(w, link)
