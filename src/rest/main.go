@@ -3,13 +3,27 @@ package main
 import (
 	"log"
 	"net/http"
-	"fmt"
 	"os"
+	"os/user"
+	"strconv"
 )
 
 func main() {
 
-	fmt.Print(about())
+	user, err := user.Current()
+	if err != nil {
+		log.Fatal(err)
+	}
+	
+	my_homedir := user.HomeDir
+	my_pid := strconv.Itoa(os.Getpid())
+
+	pidfile := my_homedir + "/.gtmis.pid"
+
+	f, err := os.Create(pidfile)
+	defer f.Close()
+	f.WriteString(my_pid)
+	f.Sync()
 
 	router := NewRouter()
 	port := os.Getenv("GTMIS_PORT")
@@ -17,8 +31,6 @@ func main() {
 	if len(port) == 0 {
 		port = "8080"
 	}
-
-	fmt.Print("Listening on port " + port + "\n")
 
 	port = ":" + port
 

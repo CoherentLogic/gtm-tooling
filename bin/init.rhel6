@@ -1,0 +1,113 @@
+#!/bin/bash
+#
+# chkconfig: 35 99 99
+# description: GT.M Instrumentation Service
+# 
+# 
+
+. /etc/init.d/functions
+
+DAEMON=/usr/sbin/gtmis
+INSTANCES=/etc/gtmis/instances
+PROG=gtmis
+
+if [ -f /etc/sysconfig/gtmis ]; then
+   . /etc/sysconfig/gtmis
+fi
+
+start() {
+    
+    echo -n $"Starting GT.M Instrumentation Service: "
+    
+    while read LINE;
+    do
+	INST=$(echo ${LINE} | awk -F ':' '{print $1}')
+	PORT=$(echo ${LINE} | awk -F ':' '{print $2}')
+
+	LOGFILE=/home/${INST}/log/${PROG}.log
+	PIDFILE=/home/${INST}/.${PROG}.pid
+
+
+
+	daemon --user ${INST} --check ${DAEMON} ${DAEMON} &> ${LOGFILE} &
+	
+	RETVAL=$?
+	LOCKFILE="/var/lock/subsys/${PROG}.${INST}"
+	
+	if [ ${RETVAL} -eq 0 ]; then
+	    touch ${LOCKFILE}
+	    success
+	else
+	    failure
+	fi
+
+    done < ${INSTANCES}
+
+    echo
+
+    return ${RETVAL}
+}
+
+stop() {
+
+    echo -n $"Stopping GT.M Instrumentation Service: "
+
+    while read LINE;
+    do
+	INST=$(echo ${LINE} | awk -F ':' '{print $1}')
+	PORT=$(echo ${LINE} | awk -F ':' '{print $2}')
+
+	PIDFILE=/home/${INST}/.${PROG}.pid
+	
+	if [ -f ${PIDFILE} ]; then
+	    PID=$(cat ${PIDFILE})
+	    kill ${PID}
+	    if [ $? -eq 0 ]; then
+		success
+	    else
+		failure
+	    fi
+
+	    rm -f ${PIDFILE}
+	fi
+	
+	RETVAL=$?
+	LOCKFILE="/var/lock/subsys/${PROG}.${INST}"
+
+	if [ ${RETVAL} -eq 0 ]; then
+	    rm -f ${LOCKFILE}
+	fi
+
+    done < ${INSTANCES}
+
+    echo
+
+    return ${RETVAL}
+}
+
+
+
+restart() {
+    stop
+    start
+}
+
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    status)
+	status ${DAEMON}
+	RETVAL=$?
+	;;
+    restart)
+	restart
+	;;
+    *)
+	echo "usage: ${PROG} {start | stop | status | restart}"
+	exit 1
+	;;
+esac
