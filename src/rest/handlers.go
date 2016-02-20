@@ -4,7 +4,7 @@ import (
 	"os/exec"
 	"fmt"
 	"net/http"
-	"os"
+	"log"
 )
 
 func InstanceData(w http.ResponseWriter, r *http.Request) {
@@ -14,7 +14,9 @@ func InstanceData(w http.ResponseWriter, r *http.Request) {
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {
-		fmt.Fprint(w, "Internal error")
+		log.Println("Error: ", err)
+		fmt.Fprint(w, "Internal service error or server misconfiguration.")
+		
 	} else {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		fmt.Fprint(w, string(output)) 
@@ -42,13 +44,5 @@ func ServiceInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAgentPath() string {
-
-	agents_path := os.Getenv("GTMIS_AGENTS_PATH")
-
-	if len(agents_path) == 0 {
-		agents_path = "../agents"
-	}
-
-	return agents_path + "/"
-
+	return "/usr/share/gtmis/agents/"
 }

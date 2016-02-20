@@ -6,9 +6,13 @@ import (
 	"os"
 	"os/user"
 	"strconv"
+	"flag"
 )
 
 func main() {
+	
+	portFlag := flag.Int("port", 8080, "Port on which the service will listen")
+	flag.Parse()
 
 	user, err := user.Current()
 	if err != nil {
@@ -26,19 +30,20 @@ func main() {
 	f.Sync()
 
 	router := NewRouter()
-	port := os.Getenv("GTMIS_PORT")
 
-	if len(port) == 0 {
-		port = "8080"
-	}
+	port := strconv.Itoa(*portFlag)
 
 	port = ":" + port
-
+	
+	log.Println(about())	
+	log.Println("Listening on port", strconv.Itoa(*portFlag))
+	
 	log.Fatal(http.ListenAndServe(port, router))
+
 }
 
 func about() string {
 	version := "0.01"
 
-	return "GT.M Instrumentation Service v" + version + "\n Copyright (C) 2016 Coherent Logic Development\n\n"
+	return "GT.M Instrumentation Service v" + version + " Copyright (C) 2016 Coherent Logic Development"
 }

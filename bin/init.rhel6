@@ -27,9 +27,10 @@ start() {
 	LOGFILE=/home/${INST}/log/${PROG}.log
 	PIDFILE=/home/${INST}/.${PROG}.pid
 
+	ROOTDIR=/home/${INST}
+	ENVIRON="source ${ROOTDIR}/etc/env.conf &> /dev/null; cd ${ROOTDIR} &> /dev/null"
 
-
-	daemon --user ${INST} --check ${DAEMON} ${DAEMON} &> ${LOGFILE} &
+	daemon --user ${INST} --check ${DAEMON} "${ENVIRON}; ${DAEMON} --port=${PORT} &> ${LOGFILE} &"
 	
 	RETVAL=$?
 	LOCKFILE="/var/lock/subsys/${PROG}.${INST}"
